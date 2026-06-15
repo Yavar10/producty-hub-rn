@@ -53,17 +53,34 @@ export default function NotesScreen() {
     saveNotes(notes);
   }, [notes]);
 
-  function addNote() {
+  function saveNote() {
     if (!title.trim() || !content.trim()) return;
 
-    const note: Note = {
+    // If we're editing an existing note
+if (editingId) {
+  setNotes(prev =>
+    prev.map(note =>
+      note.id === editingId
+        ? {
+            ...note,
+            title,
+            content,
+          }
+        : note
+    )
+  );
+
+  setEditingId(null);
+}
+else
+  {  const note: Note = {
       id: Date.now().toString(),
       title,
       content,
     };
 
     setNotes(prev => [note, ...prev]);
-
+}
     setTitle("");
     setContent("");
   }
@@ -73,6 +90,12 @@ export default function NotesScreen() {
       prev.filter(note => note.id !== id)
     );
   }
+
+  function editNote(note: Note) {
+  setTitle(note.title);
+  setContent(note.content);
+  setEditingId(note.id);
+}
 
   return (
     <View style={styles.container}>
@@ -95,10 +118,10 @@ export default function NotesScreen() {
 
       <Pressable
         style={styles.button}
-        onPress={addNote}
+        onPress={saveNote}
       >
         <Text style={styles.buttonText}>
-          Add Note
+          {editingId ? "Update Note" : "Add Note"}
         </Text>
       </Pressable>
 
@@ -107,9 +130,10 @@ export default function NotesScreen() {
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <NoteItem
-            note={item}
-            onDelete={deleteNote}
-          />
+  note={item}
+  onDelete={deleteNote}
+  onEdit={editNote}
+/>
         )}
       />
     </View>

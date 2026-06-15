@@ -4,9 +4,10 @@ import { Note } from "../types/notes";
 type Props = {
   note: Note;
   onDelete: (id: string) => void;
+  onEdit: (note: Note) => void;
 };
 
-export default function NoteItem({ note, onDelete }: Props) {
+export default function NoteItem({ note, onDelete,onEdit }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{note.title}</Text>
@@ -14,6 +15,14 @@ export default function NoteItem({ note, onDelete }: Props) {
       <Text style={styles.content}>
         {note.content}
       </Text>
+
+    <Pressable
+  style={styles.editButton}
+  onPress={() => onEdit(note)}
+>
+  <Text style={styles.editText}>Edit</Text>
+</Pressable>
+
 
       <Pressable
         style={styles.deleteButton}
@@ -54,4 +63,16 @@ const styles = StyleSheet.create({
   deleteText: {
     color: "white",
   },
+  editButton: {
+  alignSelf: "flex-end",
+  backgroundColor: "orange",
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  borderRadius: 6,
+  marginBottom: 8,
+},
+
+editText: {
+  color: "white",
+},
 });
