@@ -19,6 +19,10 @@ export default function TasksScreen() {
 
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  const completedCount = tasks.filter(
+  task => task.completed
+).length;
+
   function addTask() {
     if (!newTask.trim()) return;
 
@@ -102,6 +106,10 @@ useEffect(() => {
           <Text style={styles.buttonText}>Add</Text>
         </Pressable>
       </View>
+
+<Text>
+  {completedCount} / {tasks.length} completed
+</Text>
 
       <FlatList
   data={tasks}
