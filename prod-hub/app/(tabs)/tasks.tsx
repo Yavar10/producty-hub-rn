@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -8,8 +8,11 @@ import {
   StyleSheet,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import TaskItem from "../../src/components/TaskItem";
 import { Task } from "../../src/types/task";
+
+const STORAGE_KEY = "tasks";
 
 export default function TasksScreen() {
   const [newTask, setNewTask] = useState("");
@@ -35,6 +38,53 @@ export default function TasksScreen() {
     );
   }
 
+// Load tasks when the screen mounts
+async function loadTasks() {
+  try {
+    const storedTasks = await AsyncStorage.getItem(STORAGE_KEY);
+
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks));
+    }
+  } catch (error) {
+    console.log("Error loading tasks:", error);
+  }
+}
+
+// Save tasks whenever they change
+async function saveTasks(tasksToSave: Task[]) {
+  try {
+    await AsyncStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(tasksToSave)
+    );
+  } catch (error) {
+    console.log("Error saving tasks:", error);
+  }
+}
+
+// toggling
+function toggleTask(id: string) {
+  setTasks(prev =>
+    prev.map(task =>
+      task.id === id
+        ? { ...task, completed: !task.completed }
+        : task
+    )
+  );
+}
+
+
+
+// Run once when component loads
+useEffect(() => {
+  loadTasks();
+}, []);
+
+// Run every time tasks changes
+useEffect(() => {
+  saveTasks(tasks);
+}, [tasks]);
 
   return (
     <View style={styles.container}>
@@ -65,6 +115,7 @@ export default function TasksScreen() {
       // passing deleteTask down to the child component
       // so TaskItem can tell the parent which task to remove
       onDelete={deleteTask}
+      onToggle={toggleTask}
     />
   )}
 />

@@ -4,12 +4,29 @@ import { Task } from "../types/task";
 type Props = {
   task: Task;
   onDelete: (id: string) => void;
+  onToggle: (id: string) => void;
 };
 
-export default function TaskItem({ task, onDelete }: Props) {
+export default function TaskItem({ task, onDelete, onToggle }: Props) {
   return (
     <View style={styles.container}>
-      <Text>{task.title}</Text>
+      <Pressable
+  style={styles.taskContent}
+  onPress={() => onToggle(task.id)}
+>
+  <Text style={styles.checkbox}>
+    {task.completed ? "☑" : "☐"}
+  </Text>
+
+  <Text
+    style={[
+      styles.taskText,
+      task.completed && styles.completedTask,
+    ]}
+  >
+    {task.title}
+  </Text>
+</Pressable>
 
       <Pressable
         style={styles.deleteButton}
@@ -42,4 +59,23 @@ const styles = StyleSheet.create({
   deleteText: {
     color: "white",
   },
+  taskContent: {
+  flexDirection: "row",
+  alignItems: "center",
+  flex: 1,
+},
+
+checkbox: {
+  fontSize: 20,
+  marginRight: 10,
+},
+
+taskText: {
+  fontSize: 16,
+},
+
+completedTask: {
+  textDecorationLine: "line-through",
+  opacity: 0.5,
+},
 });
